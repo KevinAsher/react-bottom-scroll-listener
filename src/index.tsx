@@ -27,7 +27,7 @@ export type Props = {
    * */
   children?: React.ReactNode | ((ref: React.RefObject<HTMLElement>) => React.ReactNode)
   
-  scrollContainerRef?: React.RefObject<HTMLElement> = React.createRef() 
+  scrollContainerRef?: any
 }
 
 class BottomScrollListener extends React.Component<Props> {
@@ -37,6 +37,7 @@ class BottomScrollListener extends React.Component<Props> {
   }
 
   optionalScrollContainerRef: React.RefObject<HTMLElement> = React.createRef()
+  domElement: HTMLElement
 
   constructor(props: Props) {
     super(props)
@@ -50,10 +51,10 @@ class BottomScrollListener extends React.Component<Props> {
 
   componentDidMount() {
     if (this.props.children instanceof Function || this.props.scrollContainerRef.current) {
-      this.domElement = optionalScrollContainerRef.current || this.props.scrollContainerRef.current;
+      this.domElement = this.optionalScrollContainerRef.current || this.props.scrollContainerRef.current;
       
       if (this.domElement) {
-        this.domElement.current.addEventListener('scroll', this.handleOnScroll)
+        this.domElement.addEventListener('scroll', this.handleOnScroll)
       } else {
         throw Error(
           'Unable to use scroll container: Ref to child not available, did you pass the ref prop to an element?',
