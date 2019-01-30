@@ -26,6 +26,8 @@ export type Props = {
    *   that ref shall be passed to a child tag that will be used for the scrolling container.
    * */
   children?: React.ReactNode | ((ref: React.RefObject<HTMLElement>) => React.ReactNode)
+  
+  scrollContainerRef?: React.RefObject<HTMLElement> = React.createRef() 
 }
 
 class BottomScrollListener extends React.Component<Props> {
@@ -47,9 +49,11 @@ class BottomScrollListener extends React.Component<Props> {
   }
 
   componentDidMount() {
-    if (this.props.children instanceof Function) {
-      if (this.optionalScrollContainerRef.current) {
-        this.optionalScrollContainerRef.current.addEventListener('scroll', this.handleOnScroll)
+    if (this.props.children instanceof Function || this.props.scrollContainerRef.current) {
+      this.domElement = optionalScrollContainerRef.current || this.props.scrollContainerRef.current;
+      
+      if (this.domElement) {
+        this.domElement.current.addEventListener('scroll', this.handleOnScroll)
       } else {
         throw Error(
           'Unable to use scroll container: Ref to child not available, did you pass the ref prop to an element?',
@@ -61,9 +65,9 @@ class BottomScrollListener extends React.Component<Props> {
   }
 
   componentWillUnmount() {
-    if (this.props.children instanceof Function) {
-      if (this.optionalScrollContainerRef.current) {
-        this.optionalScrollContainerRef.current.removeEventListener('scroll', this.handleOnScroll)
+    if (this.props.children instanceof Function || this.props.scrollContainerRef.current) {
+      if (this.domElement) {
+        this.domElement.removeEventListener('scroll', this.handleOnScroll)
       } else {
         throw Error('Unable to clean up scroll container: Ref has been unmounted prematurely.')
       }
@@ -74,7 +78,7 @@ class BottomScrollListener extends React.Component<Props> {
 
   private handleOnScroll() {
     if (this.props.children instanceof Function) {
-      const scrollNode = this.optionalScrollContainerRef.current
+      const scrollNode = this.domElement
 
       if (
         scrollNode != null &&
